@@ -67,7 +67,7 @@ class db_manager {
         return $xml;
     }
     
-    public function makeXmlString($array){
+    public function makeCategoriesXmlString($array){
         $xml = '<?xml version="1.0" encoding="utf-8" ?><categories>';
         
         foreach ($array as $key => $value){
@@ -75,13 +75,52 @@ class db_manager {
             $description = $value['description'];
             $title = $value['title'];
             
-            $xml .= "<category name=\"$title\" description=\"$description\"/>";
+            $xml .= "<category title=\"$title\" description=\"$description\"/>";
         }
         $xml .= '</categories>';
         return $xml; 
     }
     
     
+    
+    /*
+     * Получить список тестов нужной категории в виде xml:
+     */
+    public function getTestsByCategory($category){
+        
+        $query1 = "SELECT table_name FROM categories WHERE title='$category'";
+        $result1 = mysql_query($query1);
+        $row = mysql_fetch_row($result1);
+        $table_name = $row[0];
+       
+        $query2 = "SELECT * FROM $table_name";
+        $result2 = mysql_query($query2);
+        $resultToArray = db_manager::db_result_to_array($result2);
+        
+        //print_r($resultToArray);
+        
+        $xml = db_manager::makeTestsXmlString($resultToArray);
+        return $xml;
+    }
+    
+    public function makeTestsXmlString($array){
+        $xml = '<?xml version="1.0" encoding="utf-8" ?><quizz>';
+        
+        foreach ($array as $key => $value){
+            
+            $test_title = $value['test_title'];
+            $file_name = $value['file_name'];
+            $author = $value['author'];
+            $description = $value['description'];
+            $downloads = $value['downloads'];
+            
+            
+            
+            $xml .= "<test test_title=\"$test_title\" file_name=\"$file_name\" description=\"$description\" downloads=\"$downloads\"/>";
+        }
+        $xml .= '</quizz>';
+        return $xml; 
+    }
     
 
     
