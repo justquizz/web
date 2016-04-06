@@ -47,9 +47,11 @@ class db_manager {
     function db_result_to_array($result){
 	$res_array = array();
 	
-	while($row = mysql_fetch_assoc($result)){
-            $res_array[] = $row;
-                
+        if($result != null){
+            
+            while($row = mysql_fetch_assoc($result)){
+                $res_array[] = $row;
+            }
         }
 	return $res_array;
     }
@@ -63,7 +65,7 @@ class db_manager {
 	$result = mysql_query($query); 
 	$resultToArray = db_manager::db_result_to_array($result);
         
-        $xml = db_manager::makeXmlString($resultToArray);
+        $xml = db_manager::makeCategoriesXmlString($resultToArray);
         return $xml;
     }
     
@@ -72,10 +74,11 @@ class db_manager {
         
         foreach ($array as $key => $value){
             
-            $description = $value['description'];
+            $id = $value['id'];
             $title = $value['title'];
+            $description = $value['description'];
             
-            $xml .= "<category title=\"$title\" description=\"$description\"/>";
+            $xml .= "<category id=\"$id\" title=\"$title\" description=\"$description\"/>";
         }
         $xml .= '</categories>';
         return $xml; 
@@ -86,15 +89,15 @@ class db_manager {
     /*
      * Получить список тестов нужной категории в виде xml:
      */
-    public function getTestsByCategory($category){
+    public function getTestsByCategory($id_category){
         
-        $query1 = "SELECT table_name FROM categories WHERE title='$category'";
+        $query1 = "SELECT table_name FROM categories WHERE id='$id_category'";
         $result1 = mysql_query($query1);
         $row = mysql_fetch_row($result1);
         $table_name = $row[0];
        
         $query2 = "SELECT * FROM $table_name";
-        $result2 = mysql_query($query2);
+        $result2 = mysql_query($query2);        
         $resultToArray = db_manager::db_result_to_array($result2);
         
         //print_r($resultToArray);
