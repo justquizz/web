@@ -12,7 +12,7 @@ class db_settings {
     const HOST = 'localhost';
     const USER = 'root';
     const PSWD = '';
-    const BASE = 'justweb';
+    const DB_NAME = 'justweb';
     
     
 }
