@@ -1,11 +1,13 @@
 <?php
-include 'db/db_manager.php';
+include_once 'db/pdo_manager.php';
 
 switch ($_GET['void']){
 
 	case ('get_categories'):
-            
-            $bdManager = db_manager::getDB();
+            //echo 'get_categories';
+            //$bdManager = pdo_manager::getDB();
+            $bdManager = new pdo_manager();
+           
             $categories = $bdManager->getCategories();
             header('Content-Type: text/xml; charset=utf-8');
             echo ($categories);
@@ -14,7 +16,7 @@ switch ($_GET['void']){
 	case ('get_tests_by_category'):
 		
             $category = $_GET['category'];
-            $bdManager = db_manager::getDB();
+            $bdManager = pdo_manager::getDB();
             $tests = $bdManager->getTestsByCategory($category);
             header('Content-Type: text/xml; charset=utf-8');
             echo ($tests);
@@ -23,4 +25,3 @@ switch ($_GET['void']){
 	default:
 		echo 'Who are you?)';
 }
-
