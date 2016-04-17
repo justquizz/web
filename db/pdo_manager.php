@@ -45,7 +45,7 @@ class pdo_manager {
        
         }  
         catch(PDOException $e) {
-            echo 'some errore';
+            echo 'oops, we need solve this problem <br />';
             echo $e->getMessage();  
         }
     }
@@ -56,36 +56,22 @@ class pdo_manager {
      */
     public function getCategories(){
         
-        /*
-        $query = "select * from categories";
-	$result = mysql_query($query); 
-	$resultToArray = db_manager::db_result_to_array($result);
-        
-        $xml = db_manager::makeCategoriesXmlString($resultToArray);
-        return $xml;
-         */
-        
-        
-        # поскольку это обычный запрос без placeholder’ов,
-        # можно сразу использовать метод query()  
-        //$STH = self::$DBH->query('SELECT * from categories');
+        // Делаем запрос в БД:  
         $STH = $this->DBH->query('SELECT * from categories'); 
 
-        # устанавливаем режим выборки
+        // Устанавливаем режим выборки
         $STH->setFetchMode(PDO::FETCH_ASSOC);  
 
-        while($row = $STH->fetch()) {  
-            echo $row['id'] . "<br />";  
-            echo $row['title'] . "<br />";  
-            echo $row['description'] . "<br />";  
-        }
-         
+        // Формируем xml разметку из полученных данных:
+        $xml = pdo_manager::makeCategoriesXmlString($STH);
+        
+        return $xml;
     }
     
-    public function makeCategoriesXmlString($array){
+    private function makeCategoriesXmlString($array){
         $xml = '<?xml version="1.0" encoding="utf-8" ?><categories>';
-        
-        foreach ($array as $key => $value){
+           
+        while($value = $array->fetch()) {  
             
             $id = $value['id'];
             $title = $value['title'];
@@ -93,12 +79,57 @@ class pdo_manager {
             
             $xml .= "<category id=\"$id\" title=\"$title\" description=\"$description\"/>";
         }
+        
         $xml .= '</categories>';
         return $xml; 
     }
     
     
+    /*
+     * Получаем все тесты определенной выбранной категории:
+     */
+    public function getTestsByCategory($category){
+        
+        // Делаем запрос на получение имени таблицы:
+        $STH1 = $this->DBH->query("SELECT table_name FROM categories WHERE id='$category'"); 
+        
+        // Устанавливаем режим выборки и получаем имя таблицы выбранной категории в БД:
+        $STH1->setFetchMode(PDO::FETCH_ASSOC);
+        $row = $STH1->fetch();
+        $table_name = $row['table_name'];
+        
+        // Делаем запрос на получение всех тестов из выбранной таблицы:
+        $STH2 = $this->DBH->query("SELECT * FROM $table_name");
+        
+        // Устанавливаем режим выборки
+        $STH2->setFetchMode(PDO::FETCH_ASSOC);
+        
+        // Формируем xml разметку из полученных данных:
+        $xml = pdo_manager::makeTestsXmlString($STH2);
+        
+        return $xml;
+    }
     
-    
+    private function makeTestsXmlString($array){
+        
+        $xml = '<?xml version="1.0" encoding="utf-8" ?><quizz>';
+        
+        while($value = $array->fetch()) {  
+            
+            $test_title = $value['test_title'];
+            $file_name = $value['file_name'];
+            //$author = $value['author'];
+            $description = $value['description'];
+            $downloads = $value['downloads'];
+            
+            
+            
+            $xml .= "<test test_title=\"$test_title\" file_name=\"$file_name\" description=\"$description\" downloads=\"$downloads\"/>";
+        }
+        $xml .= '</quizz>';
+        return $xml; 
+        
+        
+    }
 
 }

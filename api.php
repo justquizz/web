@@ -16,7 +16,8 @@ switch ($_GET['void']){
 	case ('get_tests_by_category'):
 		
             $category = $_GET['category'];
-            $bdManager = pdo_manager::getDB();
+            //$bdManager = pdo_manager::getDB();
+            $bdManager = new pdo_manager();
             $tests = $bdManager->getTestsByCategory($category);
             header('Content-Type: text/xml; charset=utf-8');
             echo ($tests);
