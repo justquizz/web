@@ -37,11 +37,10 @@ class pdo_manager {
             # MySQL через PDO_MYSQL  
             //self::$DBH = new PDO("mysql:host=$host;dbname=$dbname", $user, $pswd);
             $this->DBH = new PDO("mysql:host=$host;dbname=$dbname", $user, $pswd);  
-            // режим работы
+            // режим работы и кодировка:
             //self::$DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->DBH->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            
+            $this->DBH->exec('SET NAMES utf8');            
        
         }  
         catch(PDOException $e) {
